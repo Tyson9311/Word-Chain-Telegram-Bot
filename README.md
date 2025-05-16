@@ -4,6 +4,7 @@
 [![Telegram Library](https://img.shields.io/badge/python--telegram--bot-20.0-cyan)](https://github.com/python-telegram-bot/python-telegram-bot)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+
 An addictive multiplayer word chain game for Telegram groups. Battle friends through progressively challenging stages and climb the leaderboard! 🚀
 
 ---
