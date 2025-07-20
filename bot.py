@@ -218,7 +218,7 @@ async def endgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    application = Application.builder().token("7895180575:AAGAKCXIJeQYktKDUsku7K6l_OGqzQe9dLw").build()
+    application = Application.builder().token("7876214372:AAGXZrGFN3vV4iXaYk5k-BLhUpQkE-rr-H4").build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("startclassic", startclassic))
