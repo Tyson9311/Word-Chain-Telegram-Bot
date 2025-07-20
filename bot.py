@@ -241,6 +241,7 @@ def main():
     application.add_handler(CommandHandler("startclassic", startclassic))
     application.add_handler(CommandHandler("join", join))
     application.add_handler(CommandHandler("score", score))
+    application.add_handler(CommandHandler("leaderboard", leaderboard))
     application.add_handler(CommandHandler("endgame", endgame))
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
