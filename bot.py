@@ -189,6 +189,23 @@ async def score(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"🏅 Your Score: {user_score}")
 
 
+async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async with score_lock:
+        top_players = sorted(scores.items(), key=lambda x: -x[1])[:25]
+
+    leaderboard_text = "🏆 *Top 25 Players:* 🏆\n\n"
+    for i, (user_id, score) in enumerate(top_players, 1):
+        try:
+            user = await context.bot.get_chat(int(user_id))
+            name = escape_markdown(user.first_name or user.username or "Player", version=2)
+        except:
+            name = f"User_{user_id}"
+        medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"#{i:02d}"
+        leaderboard_text += f"{medal} *{name}* — 🎖 *{score}*\n"
+
+    await update.message.reply_text(leaderboard_text, parse_mode="MarkdownV2")
+
+
 async def endgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user = update.effective_user
