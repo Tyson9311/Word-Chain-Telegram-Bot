@@ -296,7 +296,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
-    application = Application.builder().token("YOUR_BOT_TOKEN_HERE").build()
+    application = Application.builder().token("7876214372:AAGXZrGFN3vV4iXaYk5k-BLhUpQkE-rr-H4").build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
