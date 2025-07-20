@@ -1,7 +1,8 @@
+# 👇 Start of code...
 import json
 import asyncio
 import random
-from telegram import Update, BotCommand
+from telegram import Update
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 from telegram.helpers import escape_markdown
 
@@ -21,10 +22,8 @@ active_games = {}
 game_lock = asyncio.Lock()
 score_lock = asyncio.Lock()
 
-
 def format_name(user):
     return escape_markdown(user.first_name or user.username or "Player", version=2)
-
 
 class GameState:
     INCREMENT_SEQUENCE = [
@@ -59,7 +58,6 @@ class GameState:
         valid_start = [w for w in valid_words if len(w) >= min_len]
         self.current_word = random.choice(valid_start).lower()
         self.used_words.add(self.current_word)
-
         await self.bot.send_message(
             self.chat_id,
             f"🎮 *Game Started!* First word is: `{escape_markdown(self.current_word.upper(), 2)}`",
@@ -71,17 +69,14 @@ class GameState:
         if len(self.players) == 1:
             await self.end_game(self.players[0])
             return
-
         if self.timer_task and not self.timer_task.done():
             self.timer_task.cancel()
-
         user = self.players[self.current_player_index]
         min_len, timeout = self.get_round_params()
         required_letter = self.current_word[-1]
-
         await self.bot.send_message(
             self.chat_id,
-            f"🔔 *{format_name(user)}*, it's your turn!\n"
+            f"🔔 *{format_name(user)}*, it's your turn\\!\n"
             f"🔤 Start with: `{required_letter}` | 📏 Min: `{min_len}` letters | ⏱️ Time: `{timeout}`s",
             parse_mode="MarkdownV2"
         )
@@ -96,7 +91,7 @@ class GameState:
         self.players.remove(player)
         await self.bot.send_message(
             self.chat_id,
-            f"⛔ *{format_name(player)}* eliminated due to timeout!",
+            f"⛔ *{format_name(player)}* eliminated due to timeout\\!",
             parse_mode="MarkdownV2"
         )
         if len(self.players) == 1:
@@ -108,7 +103,6 @@ class GameState:
     async def process_word(self, user, word):
         word = word.strip().lower()
         min_len, _ = self.get_round_params()
-
         if (
             len(word) < min_len
             or word not in valid_words
@@ -116,25 +110,21 @@ class GameState:
             or not word.startswith(self.current_word[-1])
         ):
             return False
-
         self.used_words.add(word)
         self.current_word = word
         self.words_played_in_stage += 1
         self.current_player_index = (self.current_player_index + 1) % len(self.players)
-
         limit, _, _ = self.INCREMENT_SEQUENCE[self.increment_stage]
         if limit and self.words_played_in_stage >= limit:
             self.increment_stage += 1
             self.words_played_in_stage = 0
             await self.bot.send_message(
                 self.chat_id,
-                f"📈 *Level Up!* Stage {self.increment_stage + 1} begins now!",
+                f"📈 *Level Up!* Stage {self.increment_stage + 1} begins now\\!",
                 parse_mode="MarkdownV2"
             )
-
         if self.timer_task and not self.timer_task.done():
             self.timer_task.cancel()
-
         await self.next_turn()
         return True
 
@@ -143,26 +133,24 @@ class GameState:
             scores[str(winner.id)] = scores.get(str(winner.id), 0) + 10
             with open('score.json', 'w') as f:
                 json.dump(scores, f)
-
         await self.bot.send_message(
             self.chat_id,
-            f"🎉 *{format_name(winner)}* wins the game!\n🏆 +10 trophies!",
+            f"🎉 *{format_name(winner)}* wins the game\\!\n🏆 +10 trophies\\!",
             parse_mode="MarkdownV2"
         )
-
         async with game_lock:
             if self.chat_id in active_games:
                 del active_games[self.chat_id]
 
+# ────── COMMANDS ──────
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "👋 Welcome to *Word Chain Battle!* 🔠\n\n"
+        "👋 Welcome to *Word Chain Battle\\!* 🔠\n\n"
         "🧠 Type `/startclassic` in group to begin.\n"
         "📜 Use `/help` to view all commands.",
         parse_mode="MarkdownV2"
     )
-
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
@@ -175,24 +163,20 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode="MarkdownV2"
     )
 
-
 async def startclassic(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     async with game_lock:
         if chat_id in active_games:
             await update.message.reply_text("⚠️ A game is already running.")
             return
-
         game = GameState(chat_id, context.bot)
         active_games[chat_id] = game
         game.state = 'joining'
-
         await update.message.reply_text(
-            "🎮 *New Word Chain game started!*\n"
+            "🎮 *New Word Chain game started\\!*\n"
             "⏳ Players have *60 seconds* to `/join`.",
             parse_mode="MarkdownV2"
         )
-
         await asyncio.sleep(60)
         if len(game.players) < 2:
             del active_games[chat_id]
@@ -200,7 +184,6 @@ async def startclassic(update: Update, context: ContextTypes.DEFAULT_TYPE):
         else:
             game.state = 'playing'
             await game.start_game()
-
 
 async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
@@ -215,45 +198,32 @@ async def join(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         game.players.append(user)
         await update.message.reply_text(
-            f"🎉 {format_name(user)} joined the game! Total: {len(game.players)}",
+            f"🎉 {format_name(user)} joined the game\\! Total: {len(game.players)}",
             parse_mode="MarkdownV2"
         )
-
 
 async def endgame(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     user_id = update.effective_user.id
-
     chat_admin = await context.bot.get_chat_member(chat_id, user_id)
     if user_id != BOT_OWNER_ID and user_id not in SUDO_USERS and chat_admin.status != "creator":
         await update.message.reply_text("❌ Only owner or sudo users can stop the game.")
         return
-
     async with game_lock:
         if chat_id not in active_games:
             await update.message.reply_text("❌ No game to stop.")
             return
         del active_games[chat_id]
-
     await update.message.reply_text("🛑 Game has been ended by admin.")
-
 
 async def leaderboard(update: Update, context: ContextTypes.DEFAULT_TYPE):
     async with score_lock:
         top_players = sorted(scores.items(), key=lambda x: -x[1])[:25]
-
     text = "🏆 *Top 25 Global Players:*\n\n"
     for i, (uid, score) in enumerate(top_players, 1):
-        try:
-            user = await context.bot.get_chat(int(uid))
-            name = escape_markdown(user.first_name or user.username or f"User {uid}", version=2)
-        except:
-            name = f"User {uid}"
         medal = "🥇" if i == 1 else "🥈" if i == 2 else "🥉" if i == 3 else f"#{i}"
-        text += f"{medal} *{name}* — 🏆 {score} trophies\n"
-
+        text += f"{medal} `User {uid}` — 🏆 {score} trophies\n"
     await update.message.reply_text(text, parse_mode="MarkdownV2")
-
 
 async def show_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user = update.effective_user
@@ -264,7 +234,6 @@ async def show_score(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"📊 *{format_name(user)}'s Score:* {score} trophies",
         parse_mode="MarkdownV2"
     )
-
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
@@ -282,22 +251,22 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         success = await game.process_word(user, word)
         if success:
             await update.message.reply_text(
-                f"✅ `{word.upper()}` accepted! Next letter: `{game.current_word[-1].upper()}`",
+                f"✅ `{escape_markdown(word.upper(), 2)}` accepted\\! Next letter: `{game.current_word[-1].upper()}`",
                 parse_mode="MarkdownV2"
             )
         else:
             await update.message.reply_text(
-                f"❌ Invalid word. It must be:\n"
-                f"- Valid & unused\n"
-                f"- Min {game.get_round_params()[0]} letters\n"
+                f"❌ Invalid word\\.\n"
+                f"- Must be unused and valid\n"
+                f"- At least {game.get_round_params()[0]} letters\n"
                 f"- Start with `{game.current_word[-1]}`",
                 parse_mode="MarkdownV2"
             )
 
+# ────── MAIN ──────
 
 def main():
     application = Application.builder().token("7876214372:AAGXZrGFN3vV4iXaYk5k-BLhUpQkE-rr-H4").build()
-
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("startclassic", startclassic))
@@ -306,9 +275,7 @@ def main():
     application.add_handler(CommandHandler("leaderboard", leaderboard))
     application.add_handler(CommandHandler("endgame", endgame))
     application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.GROUPS & ~filters.COMMAND, handle_message))
-
     application.run_polling()
-
 
 if __name__ == "__main__":
     main()
