@@ -109,7 +109,7 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for details.
 ## 📧 Contact
 For support or suggestions, open a GitHub Issue or reach out on Telegram:
 
-- Telegram: [@suu_111](https://t.me/suu_111)
+- Telegram: [@Dariusz_knight](https://t.me/dariusz_knight)
 - GitHub Issues: `https://github.com/your-username/word-chain-bot/issues`
 
 ---
