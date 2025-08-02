@@ -508,7 +508,7 @@ async def reset(update: Update, context: CallbackContext):
 
 
 def main():
-    application = Application.builder().token("7876214372:AAGXZrGFN3vV4iXaYk5k-BLhUpQkE-rr-H4").build()
+    application = Application.builder().token("8473680350:AAHQxPgea_Y7Lj5LnVP2WFzxv6gL9omBwsw").build()
     
     # Add PRIVATE message handler first
     application.add_handler(MessageHandler(filters.ChatType.PRIVATE, handle_private_message))
