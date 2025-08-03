@@ -10,7 +10,7 @@ from telegram import BotCommand
 BOT_OWNER_ID = 7589421463  # Replace with your Telegram ID
 SUDO_USERS = [8170921465, 6939761445, 8037102614]  # Add more user IDs as sudo users
 
-with open('Dictionary.txt', 'r', encoding='utf-8') as f:
+with open('words.txt', 'r', encoding='utf-8') as f:
     valid_words = set(word.strip() for word in f if word.strip())
 
 score_lock = asyncio.Lock()
